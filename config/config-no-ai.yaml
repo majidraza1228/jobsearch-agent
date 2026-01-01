@@ -1,0 +1,81 @@
+# Configuration WITHOUT OpenAI (No AI Analysis)
+# Use this config if you don't want to pay for OpenAI API
+
+search:
+  # Default search parameters
+  default_keywords:
+    - "Software Engineer"
+    - "Data Scientist"
+    - "Product Manager"
+
+  default_locations:
+    - "Remote"
+    - "United States"
+
+  job_count: 50
+  days_back: 7  # Only fetch jobs from last N days
+
+scrapers:
+  # Enable/disable specific scrapers
+  indeed:
+    enabled: true
+    api_endpoint: "https://indeed12.p.rapidapi.com/jobs/search"
+    max_results: 50
+
+  linkedin:
+    enabled: false  # DISABLED - Not using LinkedIn
+    api_endpoint: "https://linkedin-data-api.p.rapidapi.com/search-jobs"
+    max_results: 50
+
+  glassdoor:
+    enabled: true
+    api_endpoint: "https://glassdoor-job-search.p.rapidapi.com/api/v1/jobs"
+    max_results: 50
+
+  monster:
+    enabled: true
+    api_endpoint: "https://monster-job-search.p.rapidapi.com/search"
+    max_results: 50
+
+database:
+  # SQLite configuration
+  echo: false  # Set to true for SQL query logging
+  pool_size: 5
+  max_overflow: 10
+
+ai:
+  # AI analysis DISABLED - No OpenAI costs!
+  # Jobs will be saved without AI analysis
+  # You'll still get all job data (title, company, description, etc.)
+  enabled: false
+  model: "gpt-3.5-turbo"
+  temperature: 0.7
+  max_tokens: 1000
+
+api:
+  # Flask API configuration
+  cors_origins:
+    - "http://localhost:5678"  # n8n default
+    - "http://localhost:3000"
+
+  rate_limit:
+    enabled: true
+    calls: 100
+    period: 3600  # 1 hour in seconds
+
+n8n:
+  # n8n integration settings
+  webhook_path: "/webhook/job-search"
+  auth_token: ""  # Optional authentication
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/jobsearch.log"
+
+# ============================================
+# TO USE THIS CONFIG:
+# ============================================
+# You only need RAPIDAPI_KEY in your .env file
+# No OPENAI_API_KEY needed!
+# Total cost: Only RapidAPI (~$0-30/month depending on usage)
