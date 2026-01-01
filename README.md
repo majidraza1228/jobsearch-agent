@@ -64,7 +64,8 @@ python src/api/server.py
 ### ⚙️ Setup Guides
 - **[YOUR_SETUP.md](YOUR_SETUP.md)** - Personalized configuration (Indeed + Glassdoor + Monster, no LinkedIn)
 - **[RAPIDAPI_SETUP.md](docs/RAPIDAPI_SETUP.md)** - How to get and configure RapidAPI keys
-- **[NO_AI_SETUP.md](docs/NO_AI_SETUP.md)** - Run without OpenAI to save money ($0 AI costs)
+- **[ANTHROPIC_SETUP.md](docs/ANTHROPIC_SETUP.md)** - Use Anthropic Claude (3-10x cheaper than OpenAI!)
+- **[NO_AI_SETUP.md](docs/NO_AI_SETUP.md)** - Run without AI to save money ($0 AI costs)
 - **[ALTERNATIVE_APIS.md](docs/ALTERNATIVE_APIS.md)** - Free alternatives: SerpAPI, Adzuna, RSS feeds
 
 ### 📖 Reference Documentation
@@ -94,11 +95,19 @@ python src/api/server.py
   📖 See [RAPIDAPI_SETUP.md](docs/RAPIDAPI_SETUP.md) for RapidAPI setup
   📖 See [ALTERNATIVE_APIS.md](docs/ALTERNATIVE_APIS.md) for free options
 
-### Optional
-- **OpenAI API key** - For AI analysis (~$0.01/job with GPT-3.5-turbo)
+### Optional (AI Analysis)
+- **Choose ONE AI provider** for job analysis:
+
+  | Provider | Cost/Job | Models | Best For |
+  |----------|----------|--------|----------|
+  | **Anthropic Claude** | $0.0005-0.015 | Haiku, Sonnet, Opus | **Best value!** |
+  | **OpenAI GPT** | $0.01-0.05 | GPT-3.5, GPT-4 | Industry standard |
+
   - ✅ Extracts skills, requirements, summaries
-  - ⚠️ Can skip with `--no-analyze` flag to save money
-  - 📖 See [NO_AI_SETUP.md](docs/NO_AI_SETUP.md) to run without OpenAI
+  - ✅ **Anthropic is 3-10x cheaper** than OpenAI!
+  - ⚠️ Can skip with `--no-analyze` flag (free)
+  - 📖 [ANTHROPIC_SETUP.md](docs/ANTHROPIC_SETUP.md) - Claude setup (recommended!)
+  - 📖 [NO_AI_SETUP.md](docs/NO_AI_SETUP.md) - Run without AI
 
 ---
 
