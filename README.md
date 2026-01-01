@@ -2,88 +2,369 @@
 
 An intelligent job search agent that scrapes job requirements from multiple platforms (Indeed, LinkedIn, Glassdoor, Monster) and integrates seamlessly with n8n workflows.
 
-## Features
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/majidraza1228/jobsearch-agent)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-green)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
-- 🔍 Multi-platform job scraping (Indeed, LinkedIn, Glassdoor, Monster)
-- 🤖 AI-powered job matching and analysis
-- 📊 SQLite database for job storage
-- 🔗 n8n webhook integration
-- 🌐 API-based scraping for reliability
-- ⚡ RESTful API endpoints
+## ✨ Features
 
-## Architecture
+- 🔍 **Multi-platform job scraping** - Indeed, LinkedIn, Glassdoor, Monster
+- 🤖 **AI-powered analysis** - Extract skills, requirements, and summaries with OpenAI
+- 📊 **SQLite database** - Automatic job storage and deduplication
+- 🔗 **n8n integration** - Webhook support for workflow automation
+- 🌐 **API-based scraping** - Reliable, legal access via RapidAPI
+- ⚡ **RESTful API** - Complete API for custom integrations
+- 💰 **Flexible pricing** - Free tier available, optional AI features
+- 🎯 **Smart filtering** - Search by keywords, location, job type
+
+## 📋 Table of Contents
+
+- [Quick Start](#-quick-start)
+- [Documentation](#-documentation)
+- [Prerequisites](#-prerequisites)
+- [Installation](#-installation)
+- [Usage Examples](#-usage-examples)
+- [API Reference](#-api-reference)
+- [Configuration](#-configuration)
+- [Cost Guide](#-cost-guide)
+- [Troubleshooting](#-troubleshooting)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
+
+## 🚀 Quick Start
+
+Get up and running in 3 commands:
+
+```bash
+# 1. Setup environment
+cp .env.example .env  # Add your RAPIDAPI_KEY
+python src/database/init_db.py
+
+# 2. Test search (no AI, free)
+python -m src.main --search "Python Developer" --no-analyze --limit 5
+
+# 3. Start API server (for n8n)
+python src/api/server.py
+```
+
+**See [GETTING_STARTED.md](docs/GETTING_STARTED.md) for detailed step-by-step instructions.**
+
+---
+
+## 📚 Documentation
+
+### 🎯 Getting Started
+- **[GETTING_STARTED.md](docs/GETTING_STARTED.md)** - Complete tutorial from local testing to n8n integration (START HERE!)
+- **[CHEATSHEET.md](CHEATSHEET.md)** - Quick reference for all commands and common tasks
+- **[WORKFLOW_DIAGRAM.md](WORKFLOW_DIAGRAM.md)** - Visual diagrams showing how everything works
+- **[QUICK_START.md](QUICK_START.md)** - 5-minute overview and setup
+
+### ⚙️ Setup Guides
+- **[YOUR_SETUP.md](YOUR_SETUP.md)** - Personalized configuration (Indeed + Glassdoor + Monster, no LinkedIn)
+- **[RAPIDAPI_SETUP.md](docs/RAPIDAPI_SETUP.md)** - How to get and configure RapidAPI keys
+- **[NO_AI_SETUP.md](docs/NO_AI_SETUP.md)** - Run without OpenAI to save money ($0 AI costs)
+- **[ALTERNATIVE_APIS.md](docs/ALTERNATIVE_APIS.md)** - Free alternatives: SerpAPI, Adzuna, RSS feeds
+
+### 📖 Reference Documentation
+- **[API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md)** - Complete REST API reference with examples
+- **[N8N_INTEGRATION.md](docs/N8N_INTEGRATION.md)** - Advanced n8n workflows and integrations
+- **[SETUP_GUIDE.md](docs/SETUP_GUIDE.md)** - Comprehensive installation and configuration guide
+
+### 📁 Configuration Files
+- **[config.yaml](config/config.yaml)** - Main configuration (enabled platforms, AI settings)
+- **[config-free.yaml](config/config-free.yaml)** - Configuration using only free APIs
+- **[config-no-ai.yaml](config/config-no-ai.yaml)** - Configuration without AI analysis
+
+---
+
+## 🔑 Prerequisites
+
+### Required
+- **Python 3.9+**
+- **API Keys** - Choose one option:
+
+  | Option | Cost | Searches/Month | Best For |
+  |--------|------|----------------|----------|
+  | **RapidAPI** | $0-50/mo | 100-5000+ | Most reliable, recommended |
+  | **SerpAPI** | FREE tier | 100 free | Best free option |
+  | **Adzuna** | FREE | 250 free | UK/Europe jobs |
+
+  📖 See [RAPIDAPI_SETUP.md](docs/RAPIDAPI_SETUP.md) for RapidAPI setup
+  📖 See [ALTERNATIVE_APIS.md](docs/ALTERNATIVE_APIS.md) for free options
+
+### Optional
+- **OpenAI API key** - For AI analysis (~$0.01/job with GPT-3.5-turbo)
+  - ✅ Extracts skills, requirements, summaries
+  - ⚠️ Can skip with `--no-analyze` flag to save money
+  - 📖 See [NO_AI_SETUP.md](docs/NO_AI_SETUP.md) to run without OpenAI
+
+---
+
+## 📦 Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/majidraza1228/jobsearch-agent.git
+cd jobsearch-agent
+
+# 2. Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Configure environment variables
+cp .env.example .env
+nano .env  # Add your RAPIDAPI_KEY and optionally OPENAI_API_KEY
+
+# 5. Initialize database
+python src/database/init_db.py
+```
+
+**For detailed instructions, see [GETTING_STARTED.md](docs/GETTING_STARTED.md)**
+
+---
+
+## 💡 Usage Examples
+
+### Command Line Interface
+
+```bash
+# Basic search (without AI - FREE)
+python -m src.main --search "Python Developer" --location "Remote" --no-analyze
+
+# Search with AI analysis
+python -m src.main --search "Data Scientist" --location "New York"
+
+# List saved jobs
+python -m src.main --list --limit 20
+
+# Filter by platform
+python -m src.main --list --source indeed
+
+# Export to JSON
+python -m src.main --search "DevOps Engineer" --output jobs.json
+```
+
+### API Server
+
+```bash
+# Start the API server
+python src/api/server.py
+
+# In another terminal, test the API
+curl http://localhost:5000/health
+
+# Search for jobs
+curl -X POST http://localhost:5000/api/search \
+  -H "Content-Type: application/json" \
+  -d '{"keywords": "Software Engineer", "analyze": false}'
+```
+
+### n8n Integration
+
+1. Start the API server: `python src/api/server.py`
+2. Import workflow: `n8n-workflows/job-search-workflow.json`
+3. Configure webhook URL: `http://localhost:5000/webhook/job-search`
+4. Set up scheduled searches
+
+**Full n8n guide: [N8N_INTEGRATION.md](docs/N8N_INTEGRATION.md)**
+
+---
+
+## 🔌 API Reference
+
+### Main Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check |
+| `/api/search` | POST | Search for jobs across platforms |
+| `/api/jobs` | GET | Retrieve saved jobs from database |
+| `/api/jobs/{id}` | GET | Get specific job by ID |
+| `/webhook/job-search` | POST | n8n webhook endpoint |
+| `/api/analyze` | POST | Analyze job description with AI |
+| `/api/stats` | GET | Get database statistics |
+
+**Complete API documentation: [API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md)**
+
+---
+
+## ⚙️ Configuration
+
+### Enable/Disable Platforms
+
+Edit `config/config.yaml`:
+
+```yaml
+scrapers:
+  indeed:
+    enabled: true      # Enable/disable Indeed
+  linkedin:
+    enabled: false     # Currently disabled
+  glassdoor:
+    enabled: true      # Enable/disable Glassdoor
+  monster:
+    enabled: true      # Enable/disable Monster
+```
+
+### AI Settings
+
+```yaml
+ai:
+  model: "gpt-3.5-turbo"  # Or "gpt-4" for better quality
+  temperature: 0.7
+  max_tokens: 1000
+```
+
+**See [Configuration Files](#-configuration-files) for pre-made configs**
+
+---
+
+## 💰 Cost Guide
+
+### Free Setup ($0/month)
+- Use RapidAPI free tiers (100 requests/month)
+- Always use `--no-analyze` flag
+- Search 2-3 times per day
+- **Total: $0/month** ✅
+
+### Light Usage (~$1/month)
+- RapidAPI free tiers
+- AI analysis with GPT-3.5-turbo
+- Analyze ~100 jobs/month
+- **Total: ~$1/month**
+
+### Medium Usage (~$20-25/month)
+- RapidAPI paid plans: $10-20/month
+- Optional AI: $5/month
+- 500+ searches per month
+- **Total: ~$20-25/month**
+
+**Detailed cost breakdown: [ALTERNATIVE_APIS.md](docs/ALTERNATIVE_APIS.md)**
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| "Module not found" | Activate virtual environment: `source venv/bin/activate` |
+| "API key invalid" | Check `.env` file, ensure no quotes around key |
+| "No jobs found" | Verify platforms enabled in `config/config.yaml` |
+| "Port already in use" | Use different port: `FLASK_PORT=8000 python src/api/server.py` |
+| "Database error" | Reinitialize: `python src/database/init_db.py` |
+
+**Full troubleshooting guide: [GETTING_STARTED.md](docs/GETTING_STARTED.md#troubleshooting)**
+
+**Quick reference: [CHEATSHEET.md](CHEATSHEET.md#-troubleshooting)**
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────┐
+│  Job Platforms (APIs)                       │
+│  ├─ Indeed (RapidAPI)                       │
+│  ├─ Glassdoor (RapidAPI)                    │
+│  └─ Monster (RapidAPI)                      │
+└─────────────┬───────────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────────┐
+│  Job Search Agent (Python/Flask)            │
+│  ├─ Scrapers (normalize job data)           │
+│  ├─ AI Analyzer (OpenAI - optional)         │
+│  ├─ Database (SQLite)                       │
+│  └─ REST API (Flask)                        │
+└─────────────┬───────────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────────┐
+│  Integrations                               │
+│  ├─ CLI (terminal)                          │
+│  ├─ n8n (automation)                        │
+│  ├─ Webhook (HTTP)                          │
+│  └─ Custom integrations (API)               │
+└─────────────────────────────────────────────┘
+```
+
+**Visual diagrams: [WORKFLOW_DIAGRAM.md](WORKFLOW_DIAGRAM.md)**
+
+---
+
+## 📂 Project Structure
 
 ```
 jobsearch-agent/
 ├── src/
-│   ├── scrapers/          # Job scraper modules
-│   ├── database/          # Database models and setup
-│   ├── api/               # Flask API endpoints
-│   ├── agents/            # AI agent logic
-│   └── utils/             # Helper functions
+│   ├── scrapers/          # Job scrapers (Indeed, LinkedIn, Glassdoor, Monster, SerpAPI, Adzuna)
+│   ├── agents/            # AI job analyzer and orchestration
+│   ├── database/          # SQLite models and connection
+│   ├── api/               # Flask REST API server
+│   ├── utils/             # Configuration and logging utilities
+│   └── main.py            # CLI entry point
+├── config/
+│   ├── config.yaml        # Main configuration
+│   ├── config-free.yaml   # Free APIs only
+│   └── config-no-ai.yaml  # Without AI analysis
+├── docs/                  # All documentation
 ├── n8n-workflows/         # n8n workflow templates
-├── config/                # Configuration files
-└── tests/                 # Unit tests
+├── .env.example           # Environment variables template
+├── requirements.txt       # Python dependencies
+└── README.md             # This file
 ```
 
-## Prerequisites
+---
 
-- Python 3.9+
-- API Keys (choose one option):
-  - **Option 1 (Paid)**: RapidAPI key - $10-50/month ([Setup Guide](docs/RAPIDAPI_SETUP.md))
-  - **Option 2 (Free)**: SerpAPI key - 100 free searches/month ([Sign up](https://serpapi.com/))
-  - **Option 3 (Free)**: Adzuna API - 250 free calls/month ([Sign up](https://developer.adzuna.com/))
-- OpenAI API key (optional, for AI analysis) - ~$0.01/job with GPT-3.5-turbo
+## 🤝 Contributing
 
-## Installation
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Set up environment variables:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your API keys
-   ```
-4. Initialize the database:
-   ```bash
-   python src/database/init_db.py
-   ```
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## Usage
+---
 
-### Standalone Mode
-```bash
-python src/main.py --search "Python Developer" --location "Remote"
-```
+## 📄 License
 
-### API Server Mode (for n8n)
-```bash
-python src/api/server.py
-```
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### n8n Integration
-1. Import the workflow from `n8n-workflows/job-search-workflow.json`
-2. Configure webhook URL to point to your API server
-3. Set up scheduled triggers as needed
+---
 
-## API Endpoints
+## 🌟 Star This Repository!
 
-- `POST /api/search` - Search for jobs
-- `GET /api/jobs` - Retrieve stored jobs
-- `GET /api/jobs/{id}` - Get specific job details
-- `POST /api/analyze` - Analyze job requirements with AI
+If you find this project helpful, please give it a star ⭐ on [GitHub](https://github.com/majidraza1228/jobsearch-agent)!
 
-## Configuration
+---
 
-Edit `config/config.yaml` to customize:
-- Search parameters (keywords, locations)
-- Scraping frequency
-- Database settings
-- AI model preferences
+## 📞 Support
 
-## License
+- 📖 **Documentation**: Check the `docs/` folder
+- 🐛 **Issues**: [GitHub Issues](https://github.com/majidraza1228/jobsearch-agent/issues)
+- 💬 **Questions**: See [GETTING_STARTED.md](docs/GETTING_STARTED.md) for FAQs
 
-MIT
+---
+
+## 🎯 Quick Links
+
+- [🚀 Getting Started](docs/GETTING_STARTED.md) - Start here!
+- [📝 Cheatsheet](CHEATSHEET.md) - Quick reference
+- [🔧 API Docs](docs/API_DOCUMENTATION.md) - API reference
+- [🔗 n8n Guide](docs/N8N_INTEGRATION.md) - Automation workflows
+- [💰 Free Setup](docs/NO_AI_SETUP.md) - Zero cost option
+
+---
+
+**Built with ❤️ using Python, Flask, OpenAI, and n8n**
+
+🤖 *Generated with [Claude Code](https://claude.com/claude-code)*
