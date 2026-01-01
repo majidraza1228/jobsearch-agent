@@ -1,6 +1,6 @@
 # Job Search AI Agent for n8n
 
-An intelligent job search agent that scrapes job requirements from multiple platforms (Indeed, LinkedIn, Glassdoor, Monster) and integrates seamlessly with n8n workflows.
+An **autonomous AI agent** powered by Anthropic Claude or OpenAI that intelligently scrapes, analyzes, and extracts structured insights from job postings across multiple platforms (Indeed, LinkedIn, Glassdoor, Monster). Seamlessly integrates with n8n workflows for automated job hunting.
 
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/majidraza1228/jobsearch-agent)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-green)](https://www.python.org/)
@@ -8,14 +8,20 @@ An intelligent job search agent that scrapes job requirements from multiple plat
 
 ## ✨ Features
 
-- 🔍 **Multi-platform job scraping** - Indeed, LinkedIn, Glassdoor, Monster
-- 🤖 **AI-powered analysis** - Extract skills, requirements, and summaries with OpenAI
-- 📊 **SQLite database** - Automatic job storage and deduplication
+### 🤖 AI Agent Capabilities
+- **Autonomous job analysis** - AI automatically extracts skills, requirements, and responsibilities
+- **Natural language understanding** - Parses unstructured job descriptions into structured data
+- **Intelligent matching** - Scores job compatibility with your profile
+- **Multi-step orchestration** - Scrapes → Analyzes → Stores → Notifies automatically
+
+### 🔧 Technical Features
+- 🔍 **Multi-platform scraping** - Indeed, LinkedIn, Glassdoor, Monster
+- 🧠 **Dual AI support** - Anthropic Claude (recommended) or OpenAI GPT
+- 📊 **Smart database** - SQLite with automatic deduplication
 - 🔗 **n8n integration** - Webhook support for workflow automation
-- 🌐 **API-based scraping** - Reliable, legal access via RapidAPI
+- 🌐 **API-based access** - Reliable, legal scraping via RapidAPI
 - ⚡ **RESTful API** - Complete API for custom integrations
-- 💰 **Flexible pricing** - Free tier available, optional AI features
-- 🎯 **Smart filtering** - Search by keywords, location, job type
+- 💰 **Cost-optimized** - Anthropic Claude 3-10x cheaper than OpenAI
 
 ## 📋 Table of Contents
 
@@ -70,6 +76,7 @@ python src/api/server.py
 ### 📖 Reference Documentation
 - **[API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md)** - Complete REST API reference with examples
 - **[N8N_INTEGRATION.md](docs/N8N_INTEGRATION.md)** - Advanced n8n workflows and integrations
+- **[WHY_N8N.md](docs/WHY_N8N.md)** - Why use n8n? Local vs automated workflows explained
 - **[SETUP_GUIDE.md](docs/SETUP_GUIDE.md)** - Comprehensive installation and configuration guide
 
 ### 📁 Configuration Files
@@ -273,11 +280,11 @@ ai:
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ AI Agent Architecture
 
 ```
 ┌─────────────────────────────────────────────┐
-│  Job Platforms (APIs)                       │
+│  Data Sources (Job Platforms)               │
 │  ├─ Indeed (RapidAPI)                       │
 │  ├─ Glassdoor (RapidAPI)                    │
 │  └─ Monster (RapidAPI)                      │
@@ -285,24 +292,97 @@ ai:
               │
               ▼
 ┌─────────────────────────────────────────────┐
-│  Job Search Agent (Python/Flask)            │
-│  ├─ Scrapers (normalize job data)           │
-│  ├─ AI Analyzer (OpenAI - optional)         │
-│  ├─ Database (SQLite)                       │
-│  └─ REST API (Flask)                        │
+│  AI AGENT CORE (Autonomous Processing)      │
+│  ┌─────────────────────────────────────┐   │
+│  │ 1. Scraper Layer                    │   │
+│  │    → Fetch & normalize job data     │   │
+│  └─────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────┐   │
+│  │ 2. AI Analysis Layer (REQUIRED)     │   │
+│  │    → Anthropic Claude / OpenAI      │   │
+│  │    → Extract skills & requirements  │   │
+│  │    → Generate summaries             │   │
+│  │    → Score job matches              │   │
+│  └─────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────┐   │
+│  │ 3. Storage Layer                    │   │
+│  │    → SQLite with deduplication      │   │
+│  │    → Store structured insights      │   │
+│  └─────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────┐   │
+│  │ 4. API Layer (Flask)                │   │
+│  │    → REST endpoints                 │   │
+│  │    → n8n webhooks                   │   │
+│  └─────────────────────────────────────┘   │
 └─────────────┬───────────────────────────────┘
               │
               ▼
 ┌─────────────────────────────────────────────┐
-│  Integrations                               │
-│  ├─ CLI (terminal)                          │
-│  ├─ n8n (automation)                        │
-│  ├─ Webhook (HTTP)                          │
-│  └─ Custom integrations (API)               │
+│  Integrations & Workflows                   │
+│  ├─ CLI (interactive terminal)              │
+│  ├─ n8n (automated workflows)               │
+│  ├─ Webhooks (event-driven)                 │
+│  └─ Custom apps (REST API)                  │
 └─────────────────────────────────────────────┘
 ```
 
+**The AI agent autonomously handles the entire pipeline from scraping to analysis without human intervention.**
+
 **Visual diagrams: [WORKFLOW_DIAGRAM.md](WORKFLOW_DIAGRAM.md)**
+
+---
+
+## 🧠 What Makes This an AI Agent?
+
+Unlike simple scrapers, this is a true **AI agent** with intelligent capabilities:
+
+### 1. **Autonomous Decision-Making**
+- Determines which skills are required vs. preferred
+- Identifies remote work eligibility from context
+- Categorizes job requirements automatically
+- No human intervention needed for analysis
+
+### 2. **Natural Language Understanding**
+- Parses unstructured job descriptions (human-written text)
+- Extracts meaning and context from varied writing styles
+- Understands synonyms and technical jargon
+- Works across different job board formats
+
+### 3. **Intelligent Extraction & Reasoning**
+```python
+# Example: What the AI agent extracts from raw job text
+Input: "5+ years building scalable microservices with Python..."
+
+AI Agent Output:
+{
+  "required_skills": ["Python", "Microservices", "Scalability"],
+  "experience_years": 5,
+  "technologies": ["Python"],
+  "summary": "Senior backend role focusing on distributed systems"
+}
+```
+
+### 4. **Multi-Step Workflow Orchestration**
+The agent autonomously executes complex workflows:
+1. **Scrape** jobs from multiple sources
+2. **Normalize** data from different formats
+3. **Analyze** each job with LLM reasoning
+4. **Extract** structured insights
+5. **Store** with intelligent deduplication
+6. **Match** against user profiles (optional)
+
+### 5. **Continuous Learning Capability**
+- Adapts to different job description styles
+- Handles new platforms without code changes
+- Uses latest LLM models for improved accuracy
+
+### Why This Matters
+Traditional job scrapers just copy text. This **AI agent**:
+- ✅ Understands what jobs are asking for
+- ✅ Extracts skills you need to learn
+- ✅ Summarizes long descriptions
+- ✅ Scores your compatibility
+- ✅ Saves you hours of manual reading
 
 ---
 
@@ -372,6 +452,21 @@ If you find this project helpful, please give it a star ⭐ on [GitHub](https://
 
 ---
 
-**Built with ❤️ using Python, Flask, OpenAI, and n8n**
+**Built with ❤️ using Python, Flask, Anthropic Claude/OpenAI, and n8n**
+
+---
+
+## 🎓 Learn More About AI Agents
+
+This project demonstrates key AI agent concepts:
+- **Autonomy**: Operates without constant human guidance
+- **Perception**: Understands unstructured natural language
+- **Action**: Makes decisions and executes workflows
+- **Reasoning**: Uses LLMs for intelligent analysis
+- **Goal-oriented**: Optimizes for finding relevant jobs
+
+Perfect for learning how to build production AI agents!
+
+---
 
 🤖 *Generated with [Claude Code](https://claude.com/claude-code)*
