@@ -1,0 +1,96 @@
+# FREE Configuration (No RapidAPI required!)
+# Uses SerpAPI (100 free searches/month) + Adzuna (250 free calls/month)
+
+search:
+  # Default search parameters
+  default_keywords:
+    - "Software Engineer"
+    - "Data Scientist"
+    - "Product Manager"
+
+  default_locations:
+    - "Remote"
+    - "United States"
+
+  job_count: 50
+  days_back: 7  # Only fetch jobs from last N days
+
+scrapers:
+  # FREE OPTION 1: SerpAPI (100 searches/month free)
+  # Aggregates jobs from ALL platforms (Indeed, LinkedIn, Glassdoor, etc.)
+  serpapi:
+    enabled: true
+    max_results: 50
+
+  # FREE OPTION 2: Adzuna (250 calls/month free)
+  # Covers US, UK, AU, CA and more
+  adzuna:
+    enabled: true
+    max_results: 50
+
+  # PAID OPTIONS (Disabled by default - requires RapidAPI subscription)
+  indeed:
+    enabled: false
+    api_endpoint: "https://indeed12.p.rapidapi.com/jobs/search"
+    max_results: 50
+
+  linkedin:
+    enabled: false
+    api_endpoint: "https://linkedin-data-api.p.rapidapi.com/search-jobs"
+    max_results: 50
+
+  glassdoor:
+    enabled: false
+    api_endpoint: "https://glassdoor-job-search.p.rapidapi.com/api/v1/jobs"
+    max_results: 50
+
+  monster:
+    enabled: false
+    api_endpoint: "https://monster-job-search.p.rapidapi.com/search"
+    max_results: 50
+
+database:
+  # SQLite configuration
+  echo: false  # Set to true for SQL query logging
+  pool_size: 5
+  max_overflow: 10
+
+ai:
+  # AI analysis configuration
+  # Use gpt-3.5-turbo for lower cost (~$0.01/job)
+  # Or use gpt-4 for better quality (~$0.05/job)
+  model: "gpt-3.5-turbo"
+  temperature: 0.7
+  max_tokens: 1000
+
+  # Prompts
+  analysis_prompt: |
+    Analyze the following job posting and extract:
+    1. Required skills and technologies
+    2. Years of experience needed
+    3. Education requirements
+    4. Salary range (if mentioned)
+    5. Remote/hybrid/onsite status
+    6. Key responsibilities
+    7. Company culture indicators
+
+api:
+  # Flask API configuration
+  cors_origins:
+    - "http://localhost:5678"  # n8n default
+    - "http://localhost:3000"
+
+  rate_limit:
+    enabled: true
+    calls: 100
+    period: 3600  # 1 hour in seconds
+
+n8n:
+  # n8n integration settings
+  webhook_path: "/webhook/job-search"
+  auth_token: ""  # Optional authentication
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/jobsearch.log"

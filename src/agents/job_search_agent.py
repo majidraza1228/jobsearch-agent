@@ -5,7 +5,14 @@ import logging
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 
-from ..scrapers import IndeedScraper, LinkedinScraper, GlassdoorScraper, MonsterScraper
+from ..scrapers import (
+    IndeedScraper,
+    LinkedinScraper,
+    GlassdoorScraper,
+    MonsterScraper,
+    SerpApiScraper,
+    AdzunaScraper,
+)
 from ..database import db, Job, SearchHistory
 from .job_analyzer import JobAnalyzer
 
@@ -24,8 +31,12 @@ class JobSearchAgent:
         """
         self.config = config or {}
 
-        # Initialize scrapers
+        # Initialize scrapers (including FREE alternatives)
         self.scrapers = {
+            # FREE scrapers
+            "serpapi": SerpApiScraper(),
+            "adzuna": AdzunaScraper(),
+            # PAID scrapers (RapidAPI)
             "indeed": IndeedScraper(),
             "linkedin": LinkedinScraper(),
             "glassdoor": GlassdoorScraper(),
