@@ -29,10 +29,11 @@ jobsearch-agent/
 ## Prerequisites
 
 - Python 3.9+
-- API Keys:
-  - RapidAPI account (for Indeed, Glassdoor)
-  - LinkedIn API credentials (or SerpAPI)
-  - OpenAI API key (for AI analysis)
+- API Keys (choose one option):
+  - **Option 1 (Paid)**: RapidAPI key - $10-50/month ([Setup Guide](docs/RAPIDAPI_SETUP.md))
+  - **Option 2 (Free)**: SerpAPI key - 100 free searches/month ([Sign up](https://serpapi.com/))
+  - **Option 3 (Free)**: Adzuna API - 250 free calls/month ([Sign up](https://developer.adzuna.com/))
+- OpenAI API key (optional, for AI analysis) - ~$0.01/job with GPT-3.5-turbo
 
 ## Installation
 
