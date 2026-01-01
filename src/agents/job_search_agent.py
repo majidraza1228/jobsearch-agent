@@ -43,8 +43,11 @@ class JobSearchAgent:
             "monster": MonsterScraper(),
         }
 
-        # Initialize AI analyzer
-        self.analyzer = JobAnalyzer()
+        # Initialize AI analyzer with config
+        ai_config = self.config.get("ai", {})
+        model = ai_config.get("model", "gpt-3.5-turbo")
+        provider = ai_config.get("provider")  # Optional, auto-detected
+        self.analyzer = JobAnalyzer(model=model, provider=provider)
 
     def search_all_platforms(
         self, keywords: str, location: str = "", **kwargs

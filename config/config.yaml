@@ -42,8 +42,19 @@ database:
 
 ai:
   # AI analysis configuration
-  # Use gpt-3.5-turbo for lower cost (~$0.01/job) or gpt-4 for better quality (~$0.05/job)
-  model: "gpt-3.5-turbo"
+  # Provider: "openai" or "anthropic" (auto-detected from model name)
+  #
+  # OpenAI models:
+  #   - gpt-3.5-turbo (cost: ~$0.01/job)
+  #   - gpt-4 (cost: ~$0.05/job)
+  #
+  # Anthropic models (often cheaper!):
+  #   - claude-3-5-sonnet-20241022 (cost: ~$0.003/job, recommended)
+  #   - claude-3-opus-20240229 (cost: ~$0.015/job)
+  #   - claude-3-haiku-20240307 (cost: ~$0.0005/job, fastest & cheapest)
+
+  provider: "openai"  # "openai" or "anthropic" (optional, auto-detected)
+  model: "gpt-3.5-turbo"  # or "claude-3-5-sonnet-20241022"
   temperature: 0.7
   max_tokens: 1000
 

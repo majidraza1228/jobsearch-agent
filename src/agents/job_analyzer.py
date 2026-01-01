@@ -3,27 +3,61 @@
 import os
 from typing import Dict, Any, List, Optional
 import json
-from openai import OpenAI
-
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 class JobAnalyzer:
-    """AI-powered job analyzer using OpenAI."""
+    """AI-powered job analyzer using OpenAI or Anthropic."""
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4"):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        model: str = "gpt-3.5-turbo",
+        provider: Optional[str] = None,
+    ):
         """
         Initialize job analyzer.
 
         Args:
-            api_key: OpenAI API key
-            model: Model to use (gpt-4, gpt-3.5-turbo, etc.)
+            api_key: API key (OpenAI or Anthropic)
+            model: Model to use (gpt-4, gpt-3.5-turbo, claude-3-5-sonnet-20241022, etc.)
+            provider: "openai" or "anthropic" (auto-detected if not specified)
         """
-        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
-        self.client = OpenAI(api_key=self.api_key)
+        # Auto-detect provider if not specified
+        if provider is None:
+            if "claude" in model.lower():
+                provider = "anthropic"
+            else:
+                provider = "openai"
+
+        self.provider = provider
         self.model = model
+
+        # Initialize the appropriate client
+        if self.provider == "anthropic":
+            try:
+                from anthropic import Anthropic
+
+                self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
+                self.client = Anthropic(api_key=self.api_key)
+                logger.info(f"Using Anthropic Claude: {model}")
+            except ImportError:
+                logger.error(
+                    "Anthropic package not installed. Install with: pip install anthropic"
+                )
+                raise
+        else:  # openai
+            try:
+                from openai import OpenAI
+
+                self.api_key = api_key or os.getenv("OPENAI_API_KEY")
+                self.client = OpenAI(api_key=self.api_key)
+                logger.info(f"Using OpenAI: {model}")
+            except ImportError:
+                logger.error("OpenAI package not installed. Install with: pip install openai")
+                raise
 
     def analyze_job(self, job: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -64,20 +98,30 @@ Extract and return a JSON object with the following fields:
 
 Return ONLY the JSON object, no other text."""
 
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are a job posting analyzer. Extract structured information from job descriptions and return valid JSON.",
-                    },
-                    {"role": "user", "content": prompt},
-                ],
-                temperature=0.3,
-                max_tokens=1000,
-            )
-
-            result = response.choices[0].message.content
+            # Call appropriate AI provider
+            if self.provider == "anthropic":
+                response = self.client.messages.create(
+                    model=self.model,
+                    max_tokens=1000,
+                    temperature=0.3,
+                    system="You are a job posting analyzer. Extract structured information from job descriptions and return valid JSON.",
+                    messages=[{"role": "user", "content": prompt}],
+                )
+                result = response.content[0].text
+            else:  # openai
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": "You are a job posting analyzer. Extract structured information from job descriptions and return valid JSON.",
+                        },
+                        {"role": "user", "content": prompt},
+                    ],
+                    temperature=0.3,
+                    max_tokens=1000,
+                )
+                result = response.choices[0].message.content
 
             # Parse JSON response
             try:
