@@ -20,7 +20,7 @@ scrapers:
     max_results: 50
 
   linkedin:
-    enabled: true
+    enabled: false  # DISABLED - Not using LinkedIn
     api_endpoint: "https://linkedin-data-api.p.rapidapi.com/search-jobs"
     max_results: 50
 
@@ -42,7 +42,8 @@ database:
 
 ai:
   # AI analysis configuration
-  model: "gpt-4"
+  # Use gpt-3.5-turbo for lower cost (~$0.01/job) or gpt-4 for better quality (~$0.05/job)
+  model: "gpt-3.5-turbo"
   temperature: 0.7
   max_tokens: 1000
 
