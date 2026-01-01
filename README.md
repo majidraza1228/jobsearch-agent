@@ -65,7 +65,6 @@ python src/api/server.py
 - **[YOUR_SETUP.md](YOUR_SETUP.md)** - Personalized configuration (Indeed + Glassdoor + Monster, no LinkedIn)
 - **[RAPIDAPI_SETUP.md](docs/RAPIDAPI_SETUP.md)** - How to get and configure RapidAPI keys
 - **[ANTHROPIC_SETUP.md](docs/ANTHROPIC_SETUP.md)** - Use Anthropic Claude (3-10x cheaper than OpenAI!)
-- **[NO_AI_SETUP.md](docs/NO_AI_SETUP.md)** - Run without AI to save money ($0 AI costs)
 - **[ALTERNATIVE_APIS.md](docs/ALTERNATIVE_APIS.md)** - Free alternatives: SerpAPI, Adzuna, RSS feeds
 
 ### 📖 Reference Documentation
@@ -95,7 +94,7 @@ python src/api/server.py
   📖 See [RAPIDAPI_SETUP.md](docs/RAPIDAPI_SETUP.md) for RapidAPI setup
   📖 See [ALTERNATIVE_APIS.md](docs/ALTERNATIVE_APIS.md) for free options
 
-### Optional (AI Analysis)
+### Required (AI Analysis)
 - **Choose ONE AI provider** for job analysis:
 
   | Provider | Cost/Job | Models | Best For |
@@ -105,9 +104,8 @@ python src/api/server.py
 
   - ✅ Extracts skills, requirements, summaries
   - ✅ **Anthropic is 3-10x cheaper** than OpenAI!
-  - ⚠️ Can skip with `--no-analyze` flag (free)
+  - ⚠️ AI analysis is **REQUIRED** - you must have at least one API key
   - 📖 [ANTHROPIC_SETUP.md](docs/ANTHROPIC_SETUP.md) - Claude setup (recommended!)
-  - 📖 [NO_AI_SETUP.md](docs/NO_AI_SETUP.md) - Run without AI
 
 ---
 
@@ -142,10 +140,10 @@ python src/database/init_db.py
 ### Command Line Interface
 
 ```bash
-# Basic search (without AI - FREE)
-python -m src.main --search "Python Developer" --location "Remote" --no-analyze
+# Basic search with AI analysis
+python -m src.main --search "Python Developer" --location "Remote"
 
-# Search with AI analysis
+# Search with location
 python -m src.main --search "Data Scientist" --location "New York"
 
 # List saved jobs
@@ -167,10 +165,10 @@ python src/api/server.py
 # In another terminal, test the API
 curl http://localhost:5000/health
 
-# Search for jobs
+# Search for jobs (AI analysis runs automatically)
 curl -X POST http://localhost:5000/api/search \
   -H "Content-Type: application/json" \
-  -d '{"keywords": "Software Engineer", "analyze": false}'
+  -d '{"keywords": "Software Engineer"}'
 ```
 
 ### n8n Integration
@@ -235,23 +233,23 @@ ai:
 
 ## 💰 Cost Guide
 
-### Free Setup ($0/month)
-- Use RapidAPI free tiers (100 requests/month)
-- Always use `--no-analyze` flag
-- Search 2-3 times per day
-- **Total: $0/month** ✅
-
-### Light Usage (~$1/month)
-- RapidAPI free tiers
-- AI analysis with GPT-3.5-turbo
+### Light Usage (~$1-2/month)
+- RapidAPI free tier or SerpAPI (100 requests/month)
+- AI analysis with Anthropic Claude Sonnet
 - Analyze ~100 jobs/month
-- **Total: ~$1/month**
+- **Total: ~$1-2/month** ✅
 
-### Medium Usage (~$20-25/month)
+### Medium Usage (~$5-10/month)
+- RapidAPI or SerpAPI
+- AI analysis with Anthropic Claude Sonnet
+- Analyze ~500 jobs/month
+- **Total: ~$5-10/month**
+
+### Heavy Usage (~$20-30/month)
 - RapidAPI paid plans: $10-20/month
-- Optional AI: $5/month
-- 500+ searches per month
-- **Total: ~$20-25/month**
+- AI with Anthropic Claude: $5-10/month
+- 1000+ searches per month
+- **Total: ~$20-30/month**
 
 **Detailed cost breakdown: [ALTERNATIVE_APIS.md](docs/ALTERNATIVE_APIS.md)**
 
@@ -370,7 +368,7 @@ If you find this project helpful, please give it a star ⭐ on [GitHub](https://
 - [📝 Cheatsheet](CHEATSHEET.md) - Quick reference
 - [🔧 API Docs](docs/API_DOCUMENTATION.md) - API reference
 - [🔗 n8n Guide](docs/N8N_INTEGRATION.md) - Automation workflows
-- [💰 Free Setup](docs/NO_AI_SETUP.md) - Zero cost option
+- [💰 Cost Guide](docs/ANTHROPIC_SETUP.md) - Cheapest AI setup with Anthropic
 
 ---
 

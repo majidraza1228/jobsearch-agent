@@ -11,8 +11,8 @@ One-page reference for all common commands and workflows.
 cp .env.example .env          # Add your RAPIDAPI_KEY
 python src/database/init_db.py
 
-# 2. Test
-python -m src.main --search "Python Developer" --no-analyze --limit 5
+# 2. Test (AI analysis will run automatically)
+python -m src.main --search "Python Developer" --limit 5
 
 # 3. Run n8n
 python src/api/server.py      # Terminal 1
@@ -25,11 +25,11 @@ n8n start                     # Terminal 2 (optional)
 
 ### CLI Searches
 ```bash
-# Basic search (no AI, save money)
-python -m src.main --search "KEYWORDS" --no-analyze
-
-# Search with AI analysis
+# Basic search (AI analysis runs automatically)
 python -m src.main --search "KEYWORDS"
+
+# Search with location
+python -m src.main --search "KEYWORDS" --location "City"
 
 # Search with location
 python -m src.main --search "Python Developer" --location "San Francisco"
@@ -63,10 +63,10 @@ FLASK_PORT=8000 python src/api/server.py
 # Health check
 curl http://localhost:5000/health
 
-# Search jobs
+# Search jobs (AI analysis runs automatically)
 curl -X POST http://localhost:5000/api/search \
   -H "Content-Type: application/json" \
-  -d '{"keywords": "Python Dev", "analyze": false}'
+  -d '{"keywords": "Python Dev"}'
 
 # Get saved jobs
 curl http://localhost:5000/api/jobs?limit=10
@@ -80,10 +80,10 @@ curl http://localhost:5000/api/jobs/123
 # Get statistics
 curl http://localhost:5000/api/stats
 
-# n8n webhook
+# n8n webhook (AI analysis runs automatically)
 curl -X POST http://localhost:5000/webhook/job-search \
   -H "Content-Type: application/json" \
-  -d '{"keywords": "Software Engineer", "options": {"analyze": false}}'
+  -d '{"keywords": "Software Engineer"}'
 ```
 
 ---
@@ -92,10 +92,12 @@ curl -X POST http://localhost:5000/webhook/job-search \
 
 ### Environment Variables (.env)
 ```env
-# Required
+# Required - Job scraping
 RAPIDAPI_KEY=your_key_here
 
-# Optional (for AI)
+# Required - AI analysis (choose ONE)
+ANTHROPIC_API_KEY=your_key_here  # Recommended - 3-10x cheaper!
+# OR
 OPENAI_API_KEY=your_key_here
 
 # Defaults
@@ -120,7 +122,8 @@ scrapers:
 ### AI Settings (config/config.yaml)
 ```yaml
 ai:
-  model: "gpt-3.5-turbo"  # Or "gpt-4" for better quality
+  provider: "anthropic"  # or "openai"
+  model: "claude-3-5-sonnet-20241022"  # Recommended! Or "gpt-3.5-turbo"
   temperature: 0.7
   max_tokens: 1000
 ```
@@ -146,11 +149,12 @@ docker run -it --rm --name n8n -p 5678:5678 n8nio/n8n
   "keywords": "Python Developer",
   "location": "Remote",
   "options": {
-    "analyze": false,
     "save_to_db": true
   }
 }
 ```
+
+Note: AI analysis runs automatically on all searches.
 
 ### Schedule Cron Examples
 ```
@@ -164,44 +168,40 @@ docker run -it --rm --name n8n -p 5678:5678 n8nio/n8n
 
 ## 💰 Cost Optimization
 
-### Free Setup (Zero Cost)
+### Recommended Setup (Minimize Cost)
 ```bash
-# 1. Use RapidAPI free tiers (100 requests/month)
-# 2. Always use --no-analyze flag
-# 3. Search 2-3 times per day max
+# 1. Use Anthropic Claude (3-10x cheaper than OpenAI)
+# 2. Use claude-3-5-sonnet-20241022 model
+# 3. Use SerpAPI free tier (100 searches/month)
 
-python -m src.main --search "Python Dev" --no-analyze
-```
+# Add to .env:
+ANTHROPIC_API_KEY=your_key_here
+SERPAPI_KEY=your_key_here
 
-### Paid Setup (Minimize Cost)
-```bash
-# 1. Use gpt-3.5-turbo (not gpt-4)
-# 2. Analyze only top results
-# 3. Filter BEFORE AI analysis
-
-# Search without AI (fast, free)
-python -m src.main --search "Python Dev" --no-analyze --limit 50
-
-# Then manually pick top 5 and analyze with AI
-# Cost: Only 5 × $0.01 = $0.05
+# Search with AI analysis
+python -m src.main --search "Python Dev" --limit 50
 ```
 
 ### Monthly Cost Examples
 ```
-Light (2 searches/day):
-  • RapidAPI free tier: $0
-  • No AI: $0
-  • Total: $0/month ✅
+Light (100 jobs/month):
+  • SerpAPI free tier: $0
+  • Anthropic Claude Sonnet: $0.30
+  • Total: ~$0.30/month ✅
 
-Medium (5 searches/day):
-  • RapidAPI: $20/month
-  • No AI: $0
-  • Total: $20/month
+Medium (500 jobs/month):
+  • RapidAPI: $10/month
+  • Anthropic Claude Sonnet: $1.50
+  • Total: ~$11.50/month
 
-Heavy (10 searches/day with AI):
+Heavy (2000 jobs/month):
   • RapidAPI: $30/month
-  • OpenAI: $30/month
-  • Total: $60/month
+  • Anthropic Claude Sonnet: $6
+  • Total: ~$36/month
+
+Compare to OpenAI:
+  • 2000 jobs with GPT-3.5-turbo: ~$20 AI cost
+  • Savings with Claude: $14/month
 ```
 
 ---
@@ -256,11 +256,14 @@ python src/database/init_db.py  # Create new one
 
 ### "OpenAI rate limit"
 ```bash
-# Use --no-analyze to skip AI
-python -m src.main --search "Python" --no-analyze
+# Switch to Anthropic Claude (3-10x cheaper and higher rate limits)
+# Update .env:
+ANTHROPIC_API_KEY=your_key_here
 
-# Or switch to gpt-3.5-turbo in config.yaml
-model: "gpt-3.5-turbo"
+# Update config.yaml:
+ai:
+  provider: "anthropic"
+  model: "claude-3-5-sonnet-20241022"
 ```
 
 ---
@@ -283,7 +286,7 @@ jobsearch-agent/
 ├── docs/
 │   ├── GETTING_STARTED.md  ← Step-by-step guide
 │   ├── RAPIDAPI_SETUP.md   ← RapidAPI instructions
-│   ├── NO_AI_SETUP.md      ← Run without OpenAI
+│   ├── ANTHROPIC_SETUP.md  ← Anthropic Claude setup (recommended!)
 │   └── N8N_INTEGRATION.md  ← n8n workflows
 ├── WORKFLOW_DIAGRAM.md     ← Visual diagrams
 └── YOUR_SETUP.md           ← Your personalized config
@@ -295,10 +298,10 @@ jobsearch-agent/
 
 ### Daily Job Digest
 ```bash
-# Morning: Quick search without AI
-python -m src.main --search "Python Developer" --no-analyze
+# Morning: Quick search with AI analysis
+python -m src.main --search "Python Developer" --limit 20
 
-# Review in database
+# Review analyzed jobs in database
 python -m src.main --list --limit 20
 
 # Apply to interesting jobs
@@ -309,21 +312,22 @@ python -m src.main --list --limit 20
 9 AM Daily:
   1. n8n triggers search
   2. Searches Indeed, Glassdoor, Monster
-  3. Saves to database
-  4. Sends email with count
-  5. Posts to Slack
+  3. AI analyzes all jobs automatically
+  4. Saves to database with AI insights
+  5. Sends email with top matches
+  6. Posts to Slack
 ```
 
 ### Smart Filtering
 ```bash
-# 1. Search broadly without AI (free)
-python -m src.main --search "Software Engineer" --no-analyze --limit 100
+# 1. Search with AI analysis
+python -m src.main --search "Software Engineer" --limit 100
 
-# 2. Export and filter manually
+# 2. Export analyzed jobs
 python -m src.main --list --output all_jobs.json
 
-# 3. Analyze only top matches with AI
-# (Use API or CLI with analyze: true for specific jobs)
+# 3. Review AI-extracted skills and summaries
+# Jobs are already analyzed with skills, requirements, etc.
 ```
 
 ---
@@ -331,6 +335,7 @@ python -m src.main --list --output all_jobs.json
 ## 🔗 Useful Links
 
 - **RapidAPI**: https://rapidapi.com/
+- **Anthropic Claude**: https://console.anthropic.com/ (Recommended!)
 - **OpenAI**: https://platform.openai.com/
 - **n8n Docs**: https://docs.n8n.io/
 - **Your Repo**: https://github.com/majidraza1228/jobsearch-agent
@@ -359,11 +364,12 @@ python -m src.main --list | head -5
 ## ✅ Pre-flight Checklist
 
 Before first use:
-- [ ] API keys added to `.env`
+- [ ] API keys added to `.env` (RapidAPI + Anthropic or OpenAI)
 - [ ] Database initialized
 - [ ] Platforms enabled in `config.yaml`
-- [ ] Test search works
-- [ ] Can list saved jobs
+- [ ] AI provider configured in `config.yaml`
+- [ ] Test search works with AI analysis
+- [ ] Can list saved jobs with AI insights
 
 Before n8n:
 - [ ] API server running (port 5000)

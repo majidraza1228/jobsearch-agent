@@ -35,6 +35,21 @@ class JobAnalyzer:
         self.provider = provider
         self.model = model
 
+        # Validate that at least one AI provider key is available
+        openai_key = api_key if provider == "openai" else os.getenv("OPENAI_API_KEY")
+        anthropic_key = api_key if provider == "anthropic" else os.getenv("ANTHROPIC_API_KEY")
+
+        if not openai_key and not anthropic_key:
+            error_msg = (
+                "AI analysis requires an API key. Please set one of:\n"
+                "  - OPENAI_API_KEY in your .env file (https://platform.openai.com/)\n"
+                "  - ANTHROPIC_API_KEY in your .env file (https://console.anthropic.com/)\n"
+                "\nRecommended: Use Anthropic Claude (3-10x cheaper than OpenAI!)\n"
+                "See docs/ANTHROPIC_SETUP.md for setup instructions."
+            )
+            logger.error(error_msg)
+            raise ValueError(error_msg)
+
         # Initialize the appropriate client
         if self.provider == "anthropic":
             try:
